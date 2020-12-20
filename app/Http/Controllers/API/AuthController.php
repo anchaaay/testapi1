@@ -19,14 +19,14 @@ class AuthController extends Controller
     {
         $req->validate([
             'name' => 'required',
-            'email' => 'required',
+            'nim' => 'required',
             'password' => 'required',
         ]);
 
         //Ketika validasi berhasil, langsung buat perintah untuk create ke DB
         $data = User::create([
             'name' => $req->name,
-            'email' => $req->email,
+            'nim' => $req->nim,
             'password' => Hash::make($req->password),
         ]);
 
@@ -37,11 +37,11 @@ class AuthController extends Controller
     public function login(Request $req)
     {
         $req->validate([
-            'email' => 'required',
+            'nim' => 'required',
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $req->email)->first(); //dicari di database
+        $user = User::where('nim', $req->nim)->first(); //dicari di database
 
         if (!$user || !Hash::check($req->password, $user->password)) {
             return response()->json([
@@ -49,9 +49,9 @@ class AuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken($req->device_name)->plainTextToken;
+        $token = $user->createToken($req->nim)->plainTextToken;
         $this->response['message'] = 'success';
-        $this->response['email'] = $user->email;
+        $this->response['nim'] = $user->nim;
         $this->response['data'] = [
             'token' => $token
         ];
